@@ -1,67 +1,43 @@
 def hypothesis(example, parameters):
-    result = 0
-    for i in range(len(example[0])):
-        result += example[0][i] * parameters[i]
-
-    return result
+    return sum(x * p for x, p in zip(example[0], parameters))
 
 # The format of the examples parameter would be:
 # examples = [[feature1, feature2, ...], y: int]
 
 def batch_gradient(examples):
-    initParameters = [0] * len(examples[0][0])
+    num_features = len(examples[0][0])  # Number of features
+    parameters = [0] * num_features  # Initialize parameters to zero
 
-    maxLimit = 100000
-    alpha = 0.001
+    max_iterations = 1000  # Define inside function
+    alpha = 0.0000001
 
-    for i in range(maxLimit):
-        newParameters = initParameters[:]  # Create a copy
-        for j in range(len(newParameters)):
-            res = 0
+    for iteration in range(max_iterations):
+        new_parameters = parameters[:]  # Copy parameters
+        
+        for j in range(num_features):  # Update each parameter
+            gradient_sum = 0
             for example in examples:
-                h = hypothesis(example, initParameters)
-                y = example[1]
-                x = example[0][j]
-                res += x * (y - h)
-            newParameters[j] = initParameters[j] + alpha * res
-        initParameters = newParameters
-    
-    return initParameters
+                h = hypothesis(example, new_parameters)  # Prediction
+                y = example[1]  # Actual value
+                x_j = example[0][j]  # Feature value
+                gradient_sum += (x_j/len(examples)) * (y - h)
+
+            new_parameters[j] = parameters[j] + alpha * gradient_sum  # Update rule
+
+        parameters = new_parameters  # Apply new parameters
+
+    return parameters
 
 examples = [
-    [[2, 3, 7], 3],
-    [[4, 2, 8], 7],
-    [[9, 8, 5], 5],
-    [[1, 5, 3], 9],
-    [[2, 3, 5], 4],
-    [[3, 2, 4], 8],
-    [[5, 2, 3], 6],
-    [[4, 1, 2], 7],
-    [[2, 4, 3], 10],
-    [[7, 5, 3], 6],
-    [[1, 3, 7], 4],
-    [[4, 2, 4], 8],
-    [[8, 5, 6], 5],
-    [[2, 9, 4], 11],
-    [[3, 2, 2], 6],
-     [[2, 3, 7], 3],
-    [[4, 2, 8], 7],
-    [[9, 8, 5], 5],
-    [[1, 5, 3], 9],
-    [[2, 3, 5], 4],
-    [[3, 2, 4], 8],
-    [[5, 2, 3], 6],
-    [[4, 1, 2], 7],
-    [[2, 4, 3], 10],
-    [[7, 5, 3], 6],
-    [[1, 3, 7], 4],
-    [[4, 2, 4], 8],
-    [[8, 5, 6], 5],
-    [[2, 9, 4], 11],
-    [[3, 2, 2], 6],
+    [[2104, 3], 400],
+    [[1600, 3], 330],
+    [[2400, 3], 369],
+    [[1416, 2], 232],
+    [[3000, 4], 540],
 ]
 
 model = batch_gradient(examples)
+print(model)
 
 def applyBD(testSet):
     sum = 0
@@ -70,5 +46,5 @@ def applyBD(testSet):
 
     return sum
 
-print(applyBD([3, 2, 1]))
+print(applyBD([1000, 5]))
         
